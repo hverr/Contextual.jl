@@ -5,7 +5,7 @@ macro contextualized(MetadataType)
     end)
 end
 
-macro contextual(MetadataType)
+macro contextual(MetadataType::Symbol)
     esc(quote
         m = Contextual.metadata()
         # this crashes
