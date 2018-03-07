@@ -6,3 +6,5 @@ using Contextual: @contextualized
     x = r + 5
     return x
 end
+
+dump(f(5))

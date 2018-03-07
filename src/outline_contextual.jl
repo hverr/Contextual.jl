@@ -9,6 +9,7 @@ macro contextualized(expr::Expr)
     @assert expr.args[2].head == :block "argument must be a function definition"
 
     fcall = expr.args[1]
+    dump(fcall)
     fbody = expr.args[2]
 
     withmacro = fbody.args[2]
@@ -19,6 +20,12 @@ macro contextualized(expr::Expr)
     contextSpec = parseContextSpecifier(braces)
 
     dump(contextSpec)
+
+    new_body = Expr(:block)
+    new_body.args = fbody.args[3:end]
+
+    new_function = Expr(:function, fcall, new_body)
+    return esc(new_function)
 end
 
 function parseContextSpecifier(braces)
