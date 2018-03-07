@@ -31,8 +31,3 @@ function parseContextSpecifier(braces)
 
     return ContextSpecifier(varName, ctxType)
 end
-
-macro with(expr)
-    return expr
-end
-
