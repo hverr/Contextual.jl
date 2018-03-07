@@ -1,5 +1,5 @@
 
-macro contextualized(MetadataType)
+macro contextualized(MetadataType::Symbol)
     esc(quote
         typeof(Contextual.metadata()) <: $MetadataType
     end)
