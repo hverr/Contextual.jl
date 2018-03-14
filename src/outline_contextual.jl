@@ -4,35 +4,30 @@ struct ContextSpecifier
 end
 
 macro contextualized(expr::Expr)
-    @assert expr.head == :function "argument must be a function definition"
-    @assert expr.args[1].head == :call "argument must be a function definition"
-    @assert expr.args[2].head == :block "argument must be a function definition"
+    # Parse complete function
+    f = splitdef(expr)
+    b = f[:body]
 
-    fcall = expr.args[1]
-    dump(fcall)
-    fbody = expr.args[2]
-
-    withmacro = fbody.args[2]
-    @assert withmacro.head == :macrocall "function defintion must have a @with specifier"
-    @assert withmacro.args[1] == Symbol("@with") "funciton defintion must have a @with specifier"
-
-    braces = withmacro.args[3]
-    contextSpec = parseContextSpecifier(braces)
-
+    # Extract context specification
+    contextSpec = parseContextSpecifier(b.args[2])
     dump(contextSpec)
 
-    new_body = Expr(:block)
-    new_body.args = fbody.args[3:end]
+    # Remove context specification, i.e. @with macro
+    deleteat!(b.args, 2)
 
-    new_function = Expr(:function, fcall, new_body)
-    return esc(new_function)
+    # Output new function
+    esc(MacroTools.combinedef(f))
 end
 
-function parseContextSpecifier(braces)
-    @assert braces.head == :braces "context specification should be in braces"
+function parseContextSpecifier(macrocall)
+    @assert isexpr(macrocall, :macrocall) "expected a @with context specification"
+    @assert macrocall.args[1] == Symbol("@with") "expected a @with specification"
+
+    braces = macrocall.args[3]
+    @assert isexpr(braces, :braces) "context specification should be in braces"
 
     spec = braces.args[1]
-    @assert spec.head == :(::) "context specification should start with ctx::Ctx"
+    @assert isexpr(spec, :(::)) "context specification should start with ctx::Ctx"
     varName = spec.args[1]
     ctxType = spec.args[2]
 
