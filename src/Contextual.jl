@@ -2,7 +2,7 @@ __precompile__(false)
 
 module Contextual
 
-using Cassette
+using TinyCassette
 using MacroTools
 
 include("shared.jl")

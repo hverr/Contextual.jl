@@ -1,7 +1,7 @@
 
 macro contextualized(MetadataType::Symbol)
     esc(quote
-        typeof(Contextual.metadata()) <: $MetadataType
+        $Contextual.is_contextualized($MetadataType)
     end)
 end
 

@@ -1,30 +1,33 @@
 using Test: @test, @test_throws
 
-using Cassette: overdub
+using TinyCassette
+using TinyCassette: Overdub
 
 using Contextual
 using Contextual: @contextualized, @contextual
 
-Contextual.@context SomeCtx
-
-struct Metadata1 end
-struct Metadata2 end
+struct Ctx1 end
+struct Ctx2 end
+Contextual.@context Ctx1
+Contextual.@context Ctx2
 
 function test_contextualized()
-    function is_contextualized()::Int64
-        if @contextualized(Metadata1)
-            return 0
-        elseif @contextualized(Metadata2)
+    function get_contextualized()::Int64
+        @which Contextual.is_contextualized(Ctx1)
+        if @contextualized(Ctx1)
             return 1
-        else
+        elseif @contextualized(Ctx2)
             return 2
+        else
+            return 0
         end
     end
 
-    @test overdub(SomeCtx, is_contextualized, metadata=Metadata1())() == 0
-    @test overdub(SomeCtx, is_contextualized, metadata=Metadata2())() == 1
-    @test overdub(SomeCtx, is_contextualized)() == 2
-    @test is_contextualized() == 2
+    @test get_contextualized() == 0
+    @test Overdub(get_contextualized)() == 0
+    #@code_lowered Overdub(get_contextualized)()
+    #@test Overdub(get_contextualized, Ctx2())() == 1
+    #@test Overdub(get_contextualized, Ctx2())() == 2
 end
 
 function test_contextual()
@@ -39,5 +42,6 @@ end
 
 println("testing @contextualized")
 test_contextualized()
-println("testing @contextual")
-test_contextual()
+
+#println("testing @contextual")
+#test_contextual()
