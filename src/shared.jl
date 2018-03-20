@@ -1,11 +1,11 @@
 context() = nothing
 
-is_contextualized(::Type{T}) where {T} = false
+contextualized(::Type{T}) where {T} = false
 
 macro context(Ctx)
     esc(quote
         (o::$TinyCassette.Overdub{typeof($context), $Ctx})(args...) = o.context
-        (o::$TinyCassette.Overdub{typeof($is_contextualized), $Ctx})(::Type{T}) where {T} = (dump(Ctx); dump(T); $Ctx <: T)
+        (o::$TinyCassette.Overdub{typeof($contextualized), $Ctx})(::Type{T}) where {T} = $Ctx <: T
     end)
 end
 
