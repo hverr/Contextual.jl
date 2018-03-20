@@ -1,4 +1,3 @@
-using Test: @test, @test_throws
 
 struct Ctx1 end
 struct Ctx2 end
