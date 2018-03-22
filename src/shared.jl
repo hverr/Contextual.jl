@@ -4,7 +4,7 @@ context() = nothing
 
 macro context(Ctx)
     esc(quote
-        (o::$TinyCassette.Overdub{typeof($context), $Ctx})(args...) = o.context
+        (o::$TinyCassette.Overdub{typeof($context), $Ctx})() = o.context
         @inline (o::$TinyCassette.Overdub{typeof($contextualized), $Ctx})(::Type{T}) where {T} = $Ctx <: T
     end)
 end

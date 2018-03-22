@@ -23,13 +23,18 @@ Contextual.@context Ctx2
         @test TinyCassette.Overdub(get_contextualized, Ctx2())() == 2
     end
 
-    #@testset "@contextual" begin
-    #    function get_m1()::Metadata2
-    #        return @contextual(Metadata2)
-    #    end
-    #    @test_throws AssertionError get_m1()
+    @testset "@contextual" begin
+        function get_ctx1()::Ctx1
+            return @contextual(Ctx1)
+        end
 
-    #    # currently this crashes
-    #    @test overdub(SomeCtx, get_m1, metadata=Metadata1())() <: Metadata1
-    #end
+        function get_ctx2()::Ctx2
+            return @contextual(Ctx2)
+        end
+
+        @test_throws MethodError get_ctx1()
+        @test_throws MethodError get_ctx2()
+        @test isa(TinyCassette.Overdub(get_ctx1, Ctx1())(), Ctx1)
+        @test isa(TinyCassette.Overdub(get_ctx2, Ctx2())(), Ctx2)
+    end
 end
