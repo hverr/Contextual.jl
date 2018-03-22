@@ -16,11 +16,11 @@ macro contextualized(expr::Expr)
     deleteat!(b.args, 2)
 
     # Query current context from Overdub struct
-    insert!(b.args, 2, :($(contextSpec.varName) = $Contextual.context() :: $(contextSpec.ctxType)))
+    insert!(b.args, 2, :($(contextSpec.varName) = o.context :: $(contextSpec.ctxType)))
 
     # Output new function
 
-    f[:name] = :(::$TinyCassette.Overdub{typeof($(f[:name])), $(contextSpec.ctxType)})
+    f[:name] = :(o::$TinyCassette.Overdub{typeof($(f[:name])), $(contextSpec.ctxType)})
     esc(MacroTools.combinedef(f))
 end
 
