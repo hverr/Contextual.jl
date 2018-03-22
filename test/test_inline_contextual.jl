@@ -1,8 +1,8 @@
 
 struct Ctx1 end
 struct Ctx2 end
-Contextual.@context Ctx1
-Contextual.@context Ctx2
+@context Ctx1
+@context Ctx2
 
 @testset "inline contextual" begin
 

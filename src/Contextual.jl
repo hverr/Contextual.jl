@@ -5,7 +5,7 @@ module Contextual
 using TinyCassette
 using MacroTools
 
-export @contextualized, @contextual
+export @context, @contextualized, @contextual
 
 include("shared.jl")
 include("inline_contextual.jl")
