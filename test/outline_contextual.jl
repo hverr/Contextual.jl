@@ -2,9 +2,9 @@
 using Contextual
 using Contextual: @contextualized
 
-@contextualized function f(r) @with {dev::CuDevice}
+f(r) = x+3
+
+@contextualized function f(r) @with {dev::Int64}
     x = r + 5
     return x
 end
-
-dump(f(5))

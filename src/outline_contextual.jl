@@ -15,7 +15,12 @@ macro contextualized(expr::Expr)
     # Remove context specification, i.e. @with macro
     deleteat!(b.args, 2)
 
+    # Query current context from Overdub struct
+    insert!(b.args, 2, :($(contextSpec.varName) = $Contextual.context() :: $(contextSpec.ctxType)))
+
     # Output new function
+
+    f[:name] = :(::$TinyCassette.Overdub{typeof($(f[:name])), $(contextSpec.ctxType)})
     esc(MacroTools.combinedef(f))
 end
 
