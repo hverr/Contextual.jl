@@ -20,7 +20,9 @@ macro contextualized(expr::Expr)
     varName = :(contextual_226d200456eb3bfd352f53e040b453787b46cc24) # surely no one will use this variable name? :O
 
     # Query current context from Overdub struct
-    insert!(b.args, 2, :(const $(contextSpec.varName) = $varName.context :: $(contextSpec.ctxType)))
+    if contextSpec.varName != :(_)
+        insert!(b.args, 2, :(const $(contextSpec.varName) = $varName.context :: $(contextSpec.ctxType)))
+    end
 
     # Output new function
     if contextSpec.subtype

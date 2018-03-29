@@ -17,6 +17,17 @@ end
     @test (@withctx Int64Ctx(5) f(2)) == 7
 end
 
+@testset "outline contextual without context assignment" begin
+    g() = 0
+
+    @contextualized function g() @with {_::Int64Ctx}
+        1
+    end
+
+    @test g() == 0
+    @test (@withctx Int64Ctx(5) g()) == 1
+end
+
 abstract type OutlineTypeA end
 struct OutlineTypeB <: OutlineTypeA end
 
