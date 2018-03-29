@@ -4,6 +4,9 @@ struct Int64Ctx
 end
 @context Int64Ctx
 
+struct Int64TypeVarCtx{V} end
+@context Int64TypeVarCtx
+
 @testset "outline contextual" begin
 
     f(r) = r+3
@@ -26,6 +29,17 @@ end
 
     @test g() == 0
     @test (@withctx Int64Ctx(5) g()) == 1
+end
+
+@testset "outline contextual with access to type" begin
+    g() = 0
+    @contextualized function g() where {V}
+        @with {_ :: Int64TypeVarCtx{V}}
+        V
+    end
+
+    @test g() == 0
+    @test (@withctx Int64TypeVarCtx{3}() g()) == 3
 end
 
 abstract type OutlineTypeA end
