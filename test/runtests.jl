@@ -3,5 +3,7 @@ using TinyCassette
 
 using Test: @testset, @test, @test_throws
 
-include("test_inline_contextual.jl")
-include("test_outline_contextual.jl")
+@testset "Contextual" begin
+    include("test_inline_contextual.jl")
+    include("test_outline_contextual.jl")
+end
