@@ -1,6 +1,7 @@
 struct ContextSpecifier
     varName::Symbol
     ctxType::Symbol
+    subtype::Bool
 end
 
 macro contextualized(expr::Expr)
@@ -22,7 +23,12 @@ macro contextualized(expr::Expr)
     insert!(b.args, 2, :(const $(contextSpec.varName) = $varName.context :: $(contextSpec.ctxType)))
 
     # Output new function
-    f[:name] = :($varName::$TinyCassette.Overdub{typeof($(f[:name])), $(contextSpec.ctxType)})
+    if contextSpec.subtype
+        f[:name] = :($varName::$TinyCassette.Overdub{typeof($(f[:name])), <:$(contextSpec.ctxType)})
+    else
+        f[:name] = :($varName::$TinyCassette.Overdub{typeof($(f[:name])), $(contextSpec.ctxType)})
+    end
+    println(f)
     esc(MacroTools.combinedef(f))
 end
 
@@ -34,9 +40,15 @@ function parseContextSpecifier(macrocall)
     @assert isexpr(braces, :braces) "context specification should be in braces"
 
     spec = braces.args[1]
-    @assert isexpr(spec, :(::)) "context specification should start with ctx::Ctx"
+    if isexpr(spec, :(::))
+        subtype = false
+    elseif isexpr(spec, :(<:))
+        subtype = true
+    else
+        @error "context specification should start with ctx::Ctx or ctx<:Ctx"
+    end
+
     varName = spec.args[1]
     ctxType = spec.args[2]
-
-    return ContextSpecifier(varName, ctxType)
+    return ContextSpecifier(varName, ctxType, subtype)
 end
