@@ -8,16 +8,12 @@ macro context(Ctx)
     end)
 end
 
-#macro overdub(ctxSpec::Expr, def::Expr)
-#    # Parse context specification
-#    if isexpr(ctxSpec, :(::))
-#        isexact = true
-#    elseif isexpr(ctxSpec, :(<:))
-#        isexact = false
-#    else
-#        @error "expected context specification as first argument, either dev::Ctx or dev<:Ctx"
-#    end
-#    ctxVar, ctxType = ctxSpec.args
-#
-#    
-#end
+macro withctx(Ctx, Fn::Expr)
+    @assert isexpr(Fn, :call) "second argument must be a function call"
+
+    fnName = Fn.args[1]
+    fnArgs = Fn.args[2:end]
+
+    o = Expr(:call, :($TinyCassette.Overdub), fnName, Ctx)
+    esc(Expr(:call, o, fnArgs...))
+end

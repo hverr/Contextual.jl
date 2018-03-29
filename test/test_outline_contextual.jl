@@ -14,5 +14,5 @@ end
     end
 
     @test f(2) == 5
-    @test TinyCassette.Overdub(f, Int64Ctx(5))(2) == 7
+    @test (@withctx Int64Ctx(5) f(2)) == 7
 end
