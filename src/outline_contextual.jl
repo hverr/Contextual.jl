@@ -19,7 +19,7 @@ macro contextualized(expr::Expr)
     varName = :(contextual_226d200456eb3bfd352f53e040b453787b46cc24) # surely no one will use this variable name? :O
 
     # Query current context from Overdub struct
-    insert!(b.args, 2, :($(contextSpec.varName) = $varName.context :: $(contextSpec.ctxType)))
+    insert!(b.args, 2, :(const $(contextSpec.varName) = $varName.context :: $(contextSpec.ctxType)))
 
     # Output new function
     f[:name] = :($varName::$TinyCassette.Overdub{typeof($(f[:name])), $(contextSpec.ctxType)})
