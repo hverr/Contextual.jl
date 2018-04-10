@@ -1,6 +1,6 @@
 struct ContextSpecifier
     varName::Symbol
-    ctxType::Symbol
+    ctxType::Any
     subtype::Bool
 end
 
