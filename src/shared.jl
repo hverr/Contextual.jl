@@ -3,8 +3,8 @@
 
 macro context(Ctx)
     esc(quote
-        @inline (o::$TinyCassette.Overdub{typeof($context), $Ctx})() = o.context
-        @inline (o::$TinyCassette.Overdub{typeof($contextualized), $Ctx})(::Type{T}) where {T} = $Ctx <: T
+        @inline $TinyCassette.execute(ctx::$Ctx, ::typeof($context)) = ctx
+        @inline $TinyCassette.execute(ctx::$Ctx, ::typeof($contextualized), ::Type{T}) where {T} = $Ctx <: T
     end)
 end
 
@@ -14,6 +14,5 @@ macro withctx(Ctx, Fn::Expr)
     fnName = Fn.args[1]
     fnArgs = Fn.args[2:end]
 
-    o = Expr(:call, :($TinyCassette.Overdub), fnName, Ctx)
-    esc(Expr(:call, o, fnArgs...))
+    esc(Expr(:call, :($TinyCassette.execute), Ctx, fnName, fnArgs...))
 end

@@ -18,9 +18,9 @@ struct Ctx2 end
         end
 
         @test get_contextualized() == 0
-        @test TinyCassette.Overdub(get_contextualized)() == 0
-        @test TinyCassette.Overdub(get_contextualized, Ctx1())() == 1
-        @test TinyCassette.Overdub(get_contextualized, Ctx2())() == 2
+        @test TinyCassette.execute(nothing, get_contextualized) == 0
+        @test TinyCassette.execute(Ctx1(), get_contextualized) == 1
+        @test TinyCassette.execute(Ctx2(), get_contextualized) == 2
     end
 
     @testset "@contextual" begin
@@ -34,7 +34,7 @@ struct Ctx2 end
 
         @test_throws MethodError get_ctx1()
         @test_throws MethodError get_ctx2()
-        @test isa(TinyCassette.Overdub(get_ctx1, Ctx1())(), Ctx1)
-        @test isa(TinyCassette.Overdub(get_ctx2, Ctx2())(), Ctx2)
+        @test isa(TinyCassette.execute(Ctx1(), get_ctx1), Ctx1)
+        @test isa(TinyCassette.execute(Ctx2(), get_ctx2), Ctx2)
     end
 end

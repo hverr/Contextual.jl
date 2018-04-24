@@ -16,20 +16,17 @@ macro contextualized(expr::Expr)
     # Remove context specification, i.e. @with macro
     deleteat!(b.args, 2)
 
-    # Variable name for overdub struct
-    varName = :(contextual_226d200456eb3bfd352f53e040b453787b46cc24) # surely no one will use this variable name? :O
-
-    # Query current context from Overdub struct
-    if contextSpec.varName != :(_)
-        insert!(b.args, 2, :(const $(contextSpec.varName) = $varName.context :: $(contextSpec.ctxType)))
-    end
-
-    # Output new function
-    if contextSpec.subtype
-        f[:name] = :($varName::$TinyCassette.Overdub{typeof($(f[:name])), <:$(contextSpec.ctxType)})
+    # Push context and function
+    if contextSpec.varName == :(_)
+        insert!(f[:args], 1, :(::$(contextSpec.ctxType)))
     else
-        f[:name] = :($varName::$TinyCassette.Overdub{typeof($(f[:name])), $(contextSpec.ctxType)})
+        insert!(f[:args], 1, :($(contextSpec.varName)::$(contextSpec.ctxType)))
     end
+    insert!(f[:args], 2, :(::typeof($(f[:name]))))
+
+    # Change function name
+    f[:name] = :($TinyCassette.execute)
+
     println(f)
     esc(MacroTools.combinedef(f))
 end
