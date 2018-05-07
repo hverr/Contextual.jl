@@ -20,11 +20,34 @@ struct Int64TypeVarCtx{V} end
     @test (@withctx Int64Ctx(5) f(2)) == 7
 end
 
+@testset "outline contextual (inline)" begin
+
+    f(r) = r+3
+
+    @inline @contextualized function f(r) @with {offset::Int64Ctx}
+        x = r + offset.value
+        return x
+    end
+
+    @test f(2) == 5
+    @test (@withctx Int64Ctx(5) f(2)) == 7
+end
+
 @testset "outline contextual (short)" begin
 
     f(r) = r+3
 
     @contextualized f(r) = (@with {offset::Int64Ctx}; r + offset.value)
+
+    @test f(2) == 5
+    @test (@withctx Int64Ctx(5) f(2)) == 7
+end
+
+@testset "outline contextual (short, inline)" begin
+
+    f(r) = r+3
+
+    @inline @contextualized f(r) = (@with {offset::Int64Ctx}; r + offset.value)
 
     @test f(2) == 5
     @test (@withctx Int64Ctx(5) f(2)) == 7
