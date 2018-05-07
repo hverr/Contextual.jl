@@ -5,6 +5,16 @@ struct ContextSpecifier
 end
 
 macro contextualized(expr::Expr)
+    if Meta.isexpr(expr, :function)
+        return contextualizedLongFunction(expr)
+    elseif Meta.isexpr(expr, :(=))
+        return contextualizedShortFunction(expr)
+    else
+        @error "expected a function definition"
+    end
+end
+
+function contextualizedLongFunction(expr::Expr)
     # Parse complete function
     f = splitdef(expr)
     b = f[:body]
@@ -28,6 +38,32 @@ macro contextualized(expr::Expr)
     f[:name] = :($TinyCassette.execute)
 
     println(f)
+    esc(MacroTools.combinedef(f))
+end
+
+function contextualizedShortFunction(expr::Expr)
+    # Parse complete function
+    f = splitdef(expr)
+    b = f[:body]
+    block = b.args[1]
+
+    # Extract context specification
+    contextSpec = parseContextSpecifier(block.args[1])
+
+    # Remove context specification
+    deleteat!(block.args, 1)
+
+    # Push contet and function
+    if contextSpec.varName == :(_)
+        insert!(f[:args], 1, :(::$(contextSpec.ctxType)))
+    else
+        insert!(f[:args], 1, :($(contextSpec.varName)::$(contextSpec.ctxType)))
+    end
+    insert!(f[:args], 2, :(::typeof($(f[:name]))))
+
+    # Change function name
+    f[:name] = :($TinyCassette.execute)
+
     esc(MacroTools.combinedef(f))
 end
 
