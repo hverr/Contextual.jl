@@ -31,7 +31,6 @@ function contextualizedFunction(expr::Expr, isshort)
         ctxIdx += 1
     end
     contextSpec = parseContextSpecifier(b.args[ctxIdx])
-    dump(contextSpec)
 
     # Remove context specification, i.e. @with macro
     deleteat!(b.args, ctxIdx)
@@ -47,7 +46,6 @@ function contextualizedFunction(expr::Expr, isshort)
     # Change function name
     f[:name] = :($TinyCassette.execute)
 
-    println(f)
     esc(MacroTools.combinedef(f))
 end
 
